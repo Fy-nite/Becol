@@ -2,8 +2,8 @@ VERSION := 1.0.0
 LIB_VERSION := 1.0.0
 
 CXX     := gcc
-TARGET = bin/fob
-LIB_TARGET = bin/libfob.so
+TARGET = bin/becol
+LIB_TARGET = bin/libbecol.so
 LIBS = -lm
 CC = gcc
 CFLAGS = -g -Wall -DCOMMIT="\"$(shell git describe --always)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror
@@ -20,7 +20,7 @@ trace: debug
 all: default
 
 OBJECTS = $(patsubst %.c, %.o, $(wildcard src/*.c))
-LIB_OBJECTS = $(patsubst %.c, %.o, $(wildcard src/fob/*.c))
+LIB_OBJECTS = $(patsubst %.c, %.o, $(shell find src/libbecol -name "*.c"))
 HEADERS = $(wildcard *.h)
 
 %.o: %.c $(HEADERS)
