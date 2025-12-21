@@ -35,21 +35,21 @@ HEADERS = $(wildcard *.h)
 .PRECIOUS: $(WIN_TARGET) $(TARGET) $(OBJECTS)
 
 $(TARGET): $(OBJECTS) $(LIB_TARGET)
-	mkdir bin -p
+	mkdir -p bin
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l:$(LIB_TARGET) $(CFLAGS)
 
 $(LIB_TARGET): CFLAGS += $(LIB_CFLAGS)
 $(LIB_TARGET): $(LIB_OBJECTS)
-	mkdir bin -p
+	mkdir -p bin
 	$(CC) $(LIB_OBJECTS) -Wall -Werror -shared $(LIBS) -o $@ $(CFLAGS)
 
 $(WIN_TARGET): $(OBJECTS) $(WIN_LIB_TARGET)
-	mkdir bin -p
+	mkdir -p bin
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l:$(LIB_TARGET)
 
 $(WIN_LIB_TARGET): CFLAGS += $(LIB_CFLAGS)
 $(WIN_LIB_TARGET): $(LIB_OBJECTS)
-	mkdir bin -p
+	mkdir -p bin
 	$(CC) $(LIB_OBJECTS) -Wall -Werror -shared $(LIBS) -o $@
 
 clean:
