@@ -1,0 +1,3 @@
+tell console to print Hi :3
+ask console for input
+tell console to print $result
