@@ -1,0 +1,133 @@
+[
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-c",
+      "-o",
+      "src/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/main.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-fPIC",
+      "-DVERSION=\"1.0.0\"",
+      "-c",
+      "-o",
+      "src/libbecol/errors/errors.o",
+      "src/libbecol/errors/errors.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/errors/errors.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/errors/errors.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-fPIC",
+      "-DVERSION=\"1.0.0\"",
+      "-c",
+      "-o",
+      "src/libbecol/libbecol.o",
+      "src/libbecol/libbecol.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/libbecol.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/libbecol.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-fPIC",
+      "-DVERSION=\"1.0.0\"",
+      "-c",
+      "-o",
+      "src/libbecol/memory/mem.o",
+      "src/libbecol/memory/mem.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/memory/mem.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/memory/mem.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-fPIC",
+      "-DVERSION=\"1.0.0\"",
+      "-c",
+      "-o",
+      "src/libbecol/tokenizer/asttree.o",
+      "src/libbecol/tokenizer/asttree.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/tokenizer/asttree.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/tokenizer/asttree.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-fPIC",
+      "-DVERSION=\"1.0.0\"",
+      "-c",
+      "-o",
+      "src/libbecol/tokenizer/tokenizer.o",
+      "src/libbecol/tokenizer/tokenizer.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/tokenizer/tokenizer.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/tokenizer/tokenizer.o"
+  },
+  {
+    "arguments": [
+      "/usr/sbin/cc",
+      "-Wall",
+      "-DCOMMIT=\"1fe4806-dirty\"",
+      "-DVERSION=\"1.0.0\"",
+      "-DSOURCE=\"https://github.com/Fy-nite/Becol.git\"",
+      "-Werror",
+      "-fPIC",
+      "-DVERSION=\"1.0.0\"",
+      "-c",
+      "-o",
+      "src/libbecol/tokenizer/tokens.o",
+      "src/libbecol/tokenizer/tokens.c"
+    ],
+    "directory": "/home/carson/2TB_NVME/Projects/Finite/Becol",
+    "file": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/tokenizer/tokens.c",
+    "output": "/home/carson/2TB_NVME/Projects/Finite/Becol/src/libbecol/tokenizer/tokens.o"
+  }
+]

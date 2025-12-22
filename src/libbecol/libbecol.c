@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "defines.h"
 #include "libbecol.h"
+#include "memory/mem.h"
 
 void BecolInit() {
     return; // TODO: things
@@ -20,4 +21,8 @@ void BecolModuleSearchPaths(char* paths[], int paths_len) {
 
 void BecolRun(char* str) {
 
+}
+
+void BecolCleanup() {
+    BecolFreeAll();
 }

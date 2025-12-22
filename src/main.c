@@ -90,5 +90,6 @@ int main(int argc, char* argv[]) {
     BecolRun(file_data);
 
     // cleanup
+    BecolCleanup();
     free(file_data);
 }

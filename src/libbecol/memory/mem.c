@@ -58,6 +58,7 @@ void* BecolMalloc(int size) {
     }
     new_chunk->size = size;
     new_chunk->addr = mem;
+    addChunk(new_chunk);
     return mem;
 }
 
@@ -81,9 +82,12 @@ char* BecolStrMalloc(char* str) {
 
 void BecolFreeAll() {
     MemoryChunk* c = rootMemory;
+    MemoryChunk* tmp;
     while (c != NULL) {
         printf("WARNING: unfreed memory at %p with size %d\n", c->addr, c->size);
         free(c->addr);
+        tmp = c->next;
         free(c);
+        c = tmp;
     }
 }

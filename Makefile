@@ -2,15 +2,16 @@ VERSION := 1.0.0
 LIB_VERSION := 1.0.0
 NAME := becol
 
-CXX     := gcc
 TARGET = bin/$(NAME)
 LIB_TARGET = bin/lib$(NAME).so
 WIN_TARGET = bin/$(NAME).exe
 WIN_LIB_TARGET = bin/lib$(NAME).dll
 LIBS = -lm
 CC ?= gcc
-CFLAGS = -g -Wall -DCOMMIT="\"$(shell git describe --always --dirty)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror
+CFLAGS =-Wall -DCOMMIT="\"$(shell git describe --always --dirty)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror
 LIB_CFLAGS = -fPIC -DVERSION="\"$(LIB_VERSION)\""
+
+OS := $(shell uname)
 
 .PHONY: default all clean
 
@@ -36,7 +37,11 @@ HEADERS = $(wildcard *.h)
 
 $(TARGET): $(OBJECTS) $(LIB_TARGET)
 	mkdir -p bin
+	ifeq $(OS) Darwin
+	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l$(LIB_TARGET) $(CFLAGS)
+	else
 	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l:$(LIB_TARGET) $(CFLAGS)
+	endif
 
 $(LIB_TARGET): CFLAGS += $(LIB_CFLAGS)
 $(LIB_TARGET): $(LIB_OBJECTS)
