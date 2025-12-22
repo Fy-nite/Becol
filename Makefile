@@ -11,13 +11,13 @@ CC ?= gcc
 CFLAGS =-Wall -DCOMMIT="\"$(shell git describe --always --dirty)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror
 LIB_CFLAGS = -fPIC -DVERSION="\"$(LIB_VERSION)\""
 
+OS := $(shell uname)
+
 ifeq ($(OS),Darwin)
 LIB_INCLUDE_FLAGS := -l$(LIB_TARGET)
 else
 LIB_INCLUDE_FLAGS := -l:$(LIB_TARGET)
 endif
-
-OS := $(shell uname)
 
 .PHONY: default all clean
 
