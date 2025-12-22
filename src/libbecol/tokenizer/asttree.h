@@ -5,28 +5,7 @@
 #define BECOL_ASTTREE
 
 #ifdef INCLUDE_ASTTREE_TOKEN_NAMES 
-char* ASTTreeTypeNames[] = {
-    "Program",
-    "Action",
-    "Request",
-    "Tell",
-    
-    "Litteral",
-    "Variable",
-    "Expr",
-
-    "Add",
-    "Sub",
-    "Mul",
-    "Div",
-    "Mod",
-    "Equal",
-    "Greator",
-    "Less",
-    "GreaterOrEqual",
-    "LessOrEqual",
-    "NotEqual",
-};
+extern char* ASTTreeTypeNames[];
 #endif
 
 typedef enum {
@@ -55,11 +34,14 @@ typedef enum {
 typedef struct ASTTreeNode {
     ASTTreeType type;
     struct ASTTreeNode** child_nodes;
-    void** arguments; // depends on type, most of the time null but not null for things with values 
+    void** arguments; // depends on type, most of the time null but not null for things with values
+    int num_of_child_nodes;
+    int num_of_arguments;
 } ASTTreeNode;
 
 char* BecolGetTypeNameFromASTType(ASTTreeType type);
 
-ASTTreeNode* BecolMallocASTNode();
+ASTTreeNode* BecolMallocASTNode(int num_of_child_nodes, int num_of_arguments);
+void         BecolFreeASTNode(ASTTreeNode* node);
 
 #endif

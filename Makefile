@@ -11,6 +11,12 @@ CC ?= gcc
 CFLAGS =-Wall -DCOMMIT="\"$(shell git describe --always --dirty)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror
 LIB_CFLAGS = -fPIC -DVERSION="\"$(LIB_VERSION)\""
 
+ifeq ($(OS),Darwin)
+LIB_INCLUDE_FLAGS := -l$(LIB_TARGET)
+else
+LIB_INCLUDE_FLAGS := -l:$(LIB_TARGET)
+endif
+
 OS := $(shell uname)
 
 .PHONY: default all clean
@@ -37,11 +43,7 @@ HEADERS = $(wildcard *.h)
 
 $(TARGET): $(OBJECTS) $(LIB_TARGET)
 	mkdir -p bin
-	ifeq $(OS) Darwin
-	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l$(LIB_TARGET) $(CFLAGS)
-	else
-	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. -l:$(LIB_TARGET) $(CFLAGS)
-	endif
+	$(CC) $(OBJECTS) -Wall $(LIBS) -o $@ -L. $(LIB_INCLUDE_FLAGS) $(CFLAGS)
 
 $(LIB_TARGET): CFLAGS += $(LIB_CFLAGS)
 $(LIB_TARGET): $(LIB_OBJECTS)
