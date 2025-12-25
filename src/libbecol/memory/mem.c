@@ -19,7 +19,9 @@ MemoryChunk* rootMemory = NULL;
 
 // append a chunk to the end of the list
 void addChunk(MemoryChunk* chunk) {
+    chunk->next = NULL;
     if (rootMemory == NULL) {
+        chunk->prev = NULL;
         rootMemory = chunk;
     } else {
         MemoryChunk* end_chunk = rootMemory;
@@ -36,11 +38,22 @@ bool canFreeChunk(void* addr) { // Try to find chunk, if found then delete chunk
         return false;
     }
     MemoryChunk* chunk = rootMemory;
+    if (chunk->next == NULL) {
+        if (chunk->addr != addr) {
+            return false;
+        }
+        free(chunk);
+        rootMemory = NULL;
+        return true;
+    }
     while (chunk->addr != addr) {
         if (chunk->next != NULL)
             chunk = chunk->next;
         else
             return false;
+    }
+    if (chunk == rootMemory) {
+        rootMemory = chunk->next;
     }
     if (chunk->prev != NULL) chunk->prev->next = chunk->next;
     if (chunk->next != NULL) chunk->next->prev = chunk->prev;
@@ -64,6 +77,8 @@ void* BecolMalloc(int size) {
 
 // free memory and delete chunk
 void BecolFree(void* mem) {
+    if (mem == NULL)
+        return;
     if (canFreeChunk(mem))
         free(mem);
     else {
@@ -86,6 +101,8 @@ void BecolFreeAll() {
     while (c != NULL) {
         printf("WARNING: unfreed memory at %p with size %d\n", c->addr, c->size);
         free(c->addr);
+        //printf("%d\n", *(char*)c->addr); // hacky solution to get address sanitizer to
+                                           // output stack trace of malloc cause use after free
         tmp = c->next;
         free(c);
         c = tmp;

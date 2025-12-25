@@ -6,11 +6,11 @@
 bool errorFlag = false;
 Error* currentError;
 
-void ReportError(ErrorCode err, char* message) {
+void BecolReportError(ErrorCode err, char* message) {
     if (errorFlag) {
         printf("Error reported while error already existed\n");
-        PrintError();
-        ClearError();
+        BecolPrintError();
+        BecolClearError();
     }
     errorFlag = true;
     currentError = BecolMalloc(sizeof(Error));
@@ -20,16 +20,17 @@ void ReportError(ErrorCode err, char* message) {
                                                      // copy it
 }
 
-bool IsError() {
+bool BecolIsError() {
     return errorFlag;
 }
 
-void ClearError() {
+void BecolClearError() {
     errorFlag = false;
+    BecolFree(currentError->message);
     BecolFree(currentError);
 }
 
-void PrintError() {
+void BecolPrintError() {
     if (errorFlag)
         printf("err: code: %d msg: \"%s\"\n", currentError->err, currentError->message); // TODO: actually good printing
 }

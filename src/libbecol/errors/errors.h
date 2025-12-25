@@ -4,7 +4,8 @@
 #define BECOL_ERRORS
 
 typedef enum {
-    BECOL_ERROR_GENERIC
+    BECOL_ERROR_GENERIC,
+    BECOL_ERROR_PARSING
 } ErrorCode;
 
 typedef struct {
@@ -15,9 +16,9 @@ typedef struct {
 extern bool errorFlag;
 extern Error* currentError;
 
-void ReportError(ErrorCode err, char* message);
-bool IsError();
-void ClearError();
-void PrintError();
+void BecolReportError(ErrorCode err, char* message);
+bool BecolIsError();
+void BecolClearError();
+void BecolPrintError();
 
 #endif
