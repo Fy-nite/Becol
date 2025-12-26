@@ -4,27 +4,32 @@
 #define BECOL_TOKENS
 
 typedef enum {
-    TOKEN_ASK,
-    TOKEN_TO,
-    TOKEN_TELL,
-    TOKEN_FOR,
-    TOKEN_WITH,
-    TOKEN_AS,
-    TOKEN_AND,
-    TOKEN_WAIT,
-    TOKEN_ACTION,
-    TOKEN_DO,
-    TOKEN_EVERY,
-    TOKEN_WHILE,
-    TOKEN_IF,
+    TOKEN_ACTION,                       
+    TOKEN_AND,                          
+    TOKEN_AS,                           
+    TOKEN_ASK,                          
+    TOKEN_DO,                           
+    TOKEN_EVERY,                        
+    TOKEN_FOR,                          
+    TOKEN_IDENTIFIER,                   
+    TOKEN_IF,                           
+    TOKEN_TELL,                         
+    TOKEN_TO,                           
+    TOKEN_WAIT,                         
+    TOKEN_WITH,                         
+    TOKEN_WHILE,                        
+    TOKEN_VARIABLE,                     
     TOKEN_LEFT_CURLY_BRACKET,  // {
     TOKEN_RIGHT_CURLY_BRACKET, // }
-    TOKEN_IDENTIFIER,
     TOKEN_NEWLINE,             // \n
     TOKEN_PLUS,                // +
     TOKEN_MINUS,               // -
     TOKEN_FORWARD_SLASH,       // /
     TOKEN_ASTRISK,             // *
+    TOKEN_PIPE,                // |
+    TOKEN_DOUBLE_PIPE,         // ||
+    TOKEN_AMPERSAND,           // &
+    TOKEN_DOUBLE_AMPERSAND,    // &&
     TOKEN_STRING,
     TOKEN_NUMBER,
     TOKEN_FLOAT,

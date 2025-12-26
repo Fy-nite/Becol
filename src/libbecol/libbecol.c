@@ -4,6 +4,7 @@
 #include "defines.h"
 #include "libbecol.h"
 #include "memory/mem.h"
+#include "tokenizer/tokenizer.h"
 
 void BecolInit() {
     return; // TODO: things
@@ -20,7 +21,8 @@ void BecolModuleSearchPaths(char* paths[], int paths_len) {
 }
 
 void BecolRun(char* str) {
-
+    ASTTreeNode *root = BecolGenASTTree(str);
+    BecolFreeASTNode(root);
 }
 
 void BecolCleanup() {

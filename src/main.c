@@ -3,8 +3,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include "libbecol/libbecol.h"
-#include "libbecol/errors/errors.h"
-#include "libbecol/tokenizer/tokenizer.h"
 #include "config.h"
 
 // cli interface
@@ -90,23 +88,7 @@ int main(int argc, char* argv[]) {
 #endif
     
     BecolRun(file_data);
-
-    Program* prog = BecolGetProgram("\"this is a test\" \"5+2\" 5+2 5>=(5 + 9-3) 10.69");
-    //Program* prog = BecolGetProgram("5+2");
     
-    while (!prog->at_end) {
-        Token* tok = BecolNextToken(prog);
-        if (BecolIsError()) {
-            BecolPrintError();
-            BecolClearError();
-            break;}
-        long int tmp = 0;
-        printf("type: %d, info: %d, info (f): %f, text: \"%s\"\n", tok->type, *(int*)(tok->type == TOKEN_NUMBER ? tok->info: &tmp), *(double*)(tok->type == TOKEN_FLOAT ? tok->info: &tmp), tok->text);
-        BecolFreeToken(tok);
-    }
-
-    BecolFreeProgram(prog);
-
     // cleanup
     BecolCleanup();
     free(file_data);

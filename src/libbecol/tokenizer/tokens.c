@@ -50,146 +50,6 @@ void BecolFreeProgram(Program* prog) {
     BecolFree(prog);
 }
 
-void BecolParseOneCharToken(Token* tok) {
-    switch (tok->text[0]) {
-        case '{':
-            tok->type = TOKEN_LEFT_CURLY_BRACKET;
-            break;
-        case '}':
-            tok->type = TOKEN_RIGHT_CURLY_BRACKET;
-            break;
-        case '\n':
-            tok->type = TOKEN_NEWLINE;
-            break;
-        case '+':
-            tok->type = TOKEN_PLUS;
-            break;
-        case '-':
-            tok->type = TOKEN_MINUS;
-            break;
-        case '*':
-            tok->type = TOKEN_ASTRISK;
-            break;
-        case '/':
-            tok->type = TOKEN_FORWARD_SLASH;
-            break;
-        case '%':
-            tok->type = TOKEN_PERCENT;
-            break;
-        case '=':
-            tok->type = TOKEN_EQUAL;
-            break;
-        case '>':
-            tok->type = TOKEN_LESS_THAN;
-            break;
-        case '<':
-            tok->type = TOKEN_GREATER_THAN;
-            break;
-        default:
-            BecolReportError(BECOL_ERROR_PARSING, "Failed to parse one character token");
-    }
-}
-
-// possiblilies: >= <= !=
-void BecolParseTwoCharToken(Token* tok) {
-    if (tok->text[0] == '>' && tok->text[1] == '=')
-        tok->type = TOKEN_GREATER_OR_EQUAL;
-    else if (tok->text[0] == '<' && tok->text[1] == '=')
-        tok->type = TOKEN_LESS_OR_EQUAL;
-    else if (tok->text[0] == '!' && tok->text[1] == '=')
-        tok->type = TOKEN_NOTEQUAL;
-    else
-        BecolReportError(BECOL_ERROR_PARSING, "Failed to parse two character token");
-}
-
-bool BecolTryParseNumber(Token* tok) {
-    char* text = tok->text;
-    bool is_float = false;
-    if (text[0] == '-')
-        text++;
-    while (*text != '\0') {
-        char c = *text;
-        if ((c < 48 || c > 57) && c != '.')
-            return false;
-        if (c == '.')
-            is_float = true;
-        text++;
-    }
-    tok->type = is_float ? TOKEN_NUMBER : TOKEN_FLOAT;
-    return true;
-}
-
-bool BecolTryParseString(Token* tok) {
-    if (tok->text[0] == '"' && tok->text[strlen(tok->text)-1] == '"') {
-        tok->type = TOKEN_STRING;
-        return true;
-    }
-    return false;
-}
-
-void BecolGetTokenType(Token* tok) {
-    int len = strlen(tok->text);
-    if (len == 0)
-        BecolReportError(BECOL_ERROR_PARSING, "Cannot parse token of len zero");
-    else if (BecolTryParseNumber(tok)) {}
-    else if (BecolTryParseString(tok)) {}
-    else if (len == 1)
-        BecolParseOneCharToken(tok);
-    else if (len == 2)
-        BecolParseTwoCharToken(tok);
-    else {
-        BecolReportError(BECOL_ERROR_PARSING, "Failed to parse token");
-    }
-    if (BecolIsError())
-        return;
-}
-
-// Getting tokens
-/*Token* BecolNextToken(Program* prog) {
-    if (prog->at_end){
-        BecolReportError(BECOL_ERROR_PARSING, "Tried to get token when at end of string");
-        return NULL;}
-    char* ptr = prog->text+prog->next_token_start;
-    char c = *ptr;
-    int size = 0;
-    // get to start of token
-    while (c == ' ' || c == '\t') {
-        c = *(ptr+=1);
-    }
-    char* tok_start = ptr;
-    bool in_str = false; // is in double quotes
-    // get size of token
-    while (((c != ' ' && c != '\t') || in_str) && c != '\0') {
-        size++;
-        if (c == '"')
-            in_str = !in_str;
-        c = *(ptr+=1);
-    }
-    if (in_str) {
-        BecolReportError(BECOL_ERROR_PARSING, "String never closed");
-        return NULL;
-    }
-    // create and copy toen info
-    Token* tok = BecolMallocToken(size);
-    memcpy(tok->text, tok_start, size);
-    tok->text[size] = 0;
-    //printf("%s\n", tok->text);
-    tok->addr = tok_start - prog->text;
-    tok->next = NULL;
-    BecolGetTokenType(tok); // get the type of token
-    if (BecolIsError()) { // error stuff
-        BecolFreeToken(tok);
-        return NULL;
-    }
-    // jump to end for the token_start value thing
-    while (c == ' ' || c == '\t') {
-        c = *(ptr+=1);
-    }
-    prog->next_token_start = ptr - prog->text;
-    if (c == '\0') prog->at_end = true;
-    return tok;
-}*/
-
 Token* BecolMallocCharToken(char c, Program* prog, TokenType type) {
     Token* tok = BecolMallocToken();
     tok->text = BecolMalloc(2);
@@ -226,105 +86,176 @@ Token* BecolNextToken(Program* prog) {
         BecolReportError(BECOL_ERROR_PARSING, "Tried to get token when at end of string");
         return NULL;
     }
-    int status = 0; // 0 - normal, 1 - number, 2 - string
-    int i=0;
-    char c;
+    int type = 0; // 0 - normal, 1 - number, 2 - string, 3 - identifier / keyword, 4 - variable
     char* ptr = prog->text+prog->next_token_start;
-    while (*ptr == ' ' || *ptr == '\t' || *ptr == '\n')
+    while (*ptr == ' ' || *ptr == '\t')
         {prog->next_token_start++; ptr++;}
-    for (;(c=ptr[i])!=0;i++) {
-        if (status == 2) { // string
-            if (c == '"') {
-                Token* tok = BecolMallocToken();
-                tok->type = TOKEN_STRING;
-                tok->text = BecolMalloc(i);
-                memcpy(tok->text, prog->text+prog->next_token_start+1, i-1);
-                tok->text[i-1] = 0;
-                tok->addr = prog->next_token_start;
-                prog->next_token_start+=i+1;
-                return tok;
+    switch (ptr[0]) {
+        case '\n':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_NEWLINE);
+        case '"':
+            type = 2; // string
+            break;
+        case '0' ... '9':
+            type = 1; // number
+            break;
+        case '$':
+            type = 4; // var
+            break;
+        case '{':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_LEFT_CURLY_BRACKET);
+        case '}':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_RIGHT_CURLY_BRACKET);
+        case '+':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_PLUS);
+        case '-':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_MINUS);
+        case '*':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_ASTRISK);
+        case '/':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_FORWARD_SLASH);
+        case '%':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_PERCENT);
+        case '=':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_EQUAL);
+        case '|':
+            if (ptr[1] == '|')
+                return BecolMallocTwoCharToken(ptr[0], ptr[1], prog, TOKEN_DOUBLE_PIPE);
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_PIPE);
+        case '&':
+            if (ptr[1] == '&')
+                return BecolMallocTwoCharToken(ptr[0], ptr[1], prog, TOKEN_DOUBLE_AMPERSAND);
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_AMPERSAND);
+        case '>':
+            if (ptr[1] == '=')
+                return BecolMallocTwoCharToken(ptr[0], ptr[1], prog, TOKEN_GREATER_OR_EQUAL);
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_GREATER_THAN);
+        case '<':
+            if (ptr[1] == '=')
+                return BecolMallocTwoCharToken(ptr[0], ptr[1], prog, TOKEN_LESS_OR_EQUAL);
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_LESS_THAN);
+        case '!':
+            if (ptr[1] == '=')
+                return BecolMallocTwoCharToken(ptr[0], ptr[1], prog, TOKEN_NOTEQUAL);
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_NOT);
+        case '(':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_LEFT_PARENTHESIS);
+        case ')':
+            return BecolMallocCharToken(ptr[0], prog, TOKEN_RIGHT_PARENTHESIS);
+        default:
+            type = 3; // identifier / keyword
+            break;
+    }
+    if (type == 2) { // string
+        int i=1;
+        for(;ptr[i]!='"';i++) {}
+        Token* tok = BecolMallocToken();
+        tok->type = TOKEN_STRING;
+        tok->text = BecolMalloc(i);
+        memcpy(tok->text, prog->text+prog->next_token_start+1, i-1);
+        tok->text[i-1] = 0;
+        tok->addr = prog->next_token_start;
+        prog->next_token_start+=i+1;
+        return tok;
+    } else if (type == 1) { // number
+        bool is_float = false;
+        int left = 0; // left of .
+        int right = 0; // right of .
+        int i=0;
+        char c = ptr[0];
+        while ((c >= '0' && c <= '9') || c == '.') {
+            if (c == '.')
+                is_float = true;
+            else {
+                if (is_float)
+                    {right *= 10; right += c-'0';}
+                else
+                    {left *= 10; left += c-'0';}
             }
+            c=ptr[++i];
         }
-        else if (status == 1) { // number
-            bool is_float = false;
-            int left = 0; // left of .
-            int right = 0; // right of .
-            while ((c >= '0' && c <= '9') || c == '.') {
-                if (c == '.')
-                    is_float = true;
-                else {
-                    if (is_float)
-                        {right *= 10; right += c-'0';}
-                    else
-                        {left *= 10; left += c-'0';}
-                }
-                c=ptr[++i];
-            }
-            Token* tok = BecolMallocToken();
-            tok->type = is_float ? TOKEN_FLOAT : TOKEN_NUMBER;
-            tok->text = BecolMalloc(i+1);
-            if (is_float) {
-                double num = 0;
-                num = right;
-                while (num >= 1) num /= 10;
-                num += left;
-                snprintf(tok->text, i+1, "%f", num);
-                tok->info = BecolMalloc(sizeof(num));
-                memcpy(tok->info, &num, sizeof(num));
-            } else {
-                snprintf(tok->text, i+1, "%d", left);
-                tok->info = BecolMalloc(sizeof(left));
-                memcpy(tok->info, &left, sizeof(left));
-            }
-            prog->next_token_start += i;
-            return tok;
+        Token* tok = BecolMallocToken();
+        tok->type = is_float ? TOKEN_FLOAT : TOKEN_NUMBER;
+        tok->text = BecolMalloc(i+1);
+        memcpy(tok->text, ptr, i);
+        tok->text[i] = 0;
+        if (is_float) {
+            double num = 0;
+            num = right;
+            while (num >= 1) num /= 10;
+            num += left;
+            tok->info = BecolMalloc(sizeof(num));
+            memcpy(tok->info, &num, sizeof(num));
+        } else {
+            tok->info = BecolMalloc(sizeof(left));
+            memcpy(tok->info, &left, sizeof(left));
         }
-        else if (status == 0) {
-            switch (c) {
-                case '"':
-                    status = 2; // string
-                    break;
-                case '0' ... '9':
-                    i--;
-                    status = 1; // number
-                    break;
-                case '{':
-                    return BecolMallocCharToken(c, prog, TOKEN_LEFT_CURLY_BRACKET);
-                case '}':
-                    return BecolMallocCharToken(c, prog, TOKEN_RIGHT_CURLY_BRACKET);
-                case '+':
-                    return BecolMallocCharToken(c, prog, TOKEN_PLUS);
-                case '-':
-                    return BecolMallocCharToken(c, prog, TOKEN_MINUS);
-                case '*':
-                    return BecolMallocCharToken(c, prog, TOKEN_ASTRISK);
-                case '/':
-                    return BecolMallocCharToken(c, prog, TOKEN_FORWARD_SLASH);
-                case '%':
-                    return BecolMallocCharToken(c, prog, TOKEN_PERCENT);
-                case '=':
-                    return BecolMallocCharToken(c, prog, TOKEN_EQUAL);
-                case '>':
-                    if (ptr[i+1] == '=')
-                        return BecolMallocTwoCharToken(c, ptr[i+1], prog, TOKEN_GREATER_OR_EQUAL);
-                    return BecolMallocCharToken(c, prog, TOKEN_GREATER_THAN);
-                case '<':
-                    if (ptr[i+1] == '=')
-                        return BecolMallocTwoCharToken(c, ptr[i+1], prog, TOKEN_LESS_OR_EQUAL);
-                    return BecolMallocCharToken(c, prog, TOKEN_LESS_THAN);
-                case '!':
-                    if (ptr[i+1] == '=')
-                        return BecolMallocTwoCharToken(c, ptr[i+1], prog, TOKEN_NOTEQUAL);
-                    return BecolMallocCharToken(c, prog, TOKEN_NOT);
-                case '(':
-                    return BecolMallocCharToken(c, prog, TOKEN_LEFT_PARENTHESIS);
-                case ')':
-                    return BecolMallocCharToken(c, prog, TOKEN_RIGHT_PARENTHESIS);
-                default:
-                    BecolReportError(BECOL_ERROR_PARSING, "Unexpected char");
-                    return NULL;
-            }
-        }
+        tok->addr = prog->next_token_start;
+        prog->next_token_start += i;
+        return tok;
+    } else if (type == 3) { // ident / keyword
+        int i = 0;
+        while (
+                (ptr[i] >= 'A' && ptr[i] <= 'Z') ||
+                (ptr[i] >= 'a' && ptr[i] <= 'z') ||
+                (ptr[i] >= '0' && ptr[i] <= '9') ||
+                ptr[i] == '-' || ptr[i] == '_'
+        ) i++;
+
+        Token* tok = BecolMallocToken();
+        tok->text = BecolMalloc(i+1);
+        memcpy(tok->text, ptr, i);
+        tok->text[i] = 0;
+        tok->type = TOKEN_IDENTIFIER;
+        char* capital = BecolStrMalloc(tok->text); // temp
+        for (int i=0;capital[i]!=0;i++)
+            capital[i] = capital[i] >= 'a' ? capital[i]-32 : capital[i];
+        if (strcmp(capital, "ACTION") == 0)
+            tok->type = TOKEN_ACTION;
+        else if (strcmp(capital, "AND") == 0)
+            tok->type = TOKEN_AND;
+        else if (strcmp(capital, "AS") == 0)
+            tok->type = TOKEN_AS;
+        else if (strcmp(capital, "ASK") == 0)
+            tok->type = TOKEN_ASK;
+        else if (strcmp(capital, "DO") == 0)
+            tok->type = TOKEN_DO;
+        else if (strcmp(capital, "EVERY") == 0)
+            tok->type = TOKEN_EVERY;
+        else if (strcmp(capital, "FOR") == 0)
+            tok->type = TOKEN_FOR;
+        else if (strcmp(capital, "IF") == 0)
+            tok->type = TOKEN_IF;
+        else if (strcmp(capital, "TELL") == 0)
+            tok->type = TOKEN_TELL;
+        else if (strcmp(capital, "TO") == 0)
+            tok->type = TOKEN_TO;
+        else if (strcmp(capital, "WAIT") == 0)
+            tok->type = TOKEN_WAIT;
+        else if (strcmp(capital, "WITH") == 0)
+            tok->type = TOKEN_WITH;
+        else if (strcmp(capital, "WHILE") == 0)
+            tok->type = TOKEN_WHILE;
+        BecolFree(capital);
+        tok->addr = prog->next_token_start;
+        prog->next_token_start+=i;
+        return tok;
+    } else if (type == 4) { // var
+        int i = 1;
+        while (
+                (ptr[i] >= 'A' && ptr[i] <= 'Z') ||
+                (ptr[i] >= 'a' && ptr[i] <= 'z') ||
+                (ptr[i] >= '0' && ptr[i] <= '9') ||
+                ptr[i] == '-' || ptr[i] == '_'
+        ) i++;
+        Token* tok = BecolMallocToken();
+        tok->text = BecolMalloc(i+1);
+        memcpy(tok->text, ptr+1, i);
+        tok->text[i] = 0;
+        tok->type = TOKEN_VARIABLE;
+        tok->addr = prog->next_token_start;
+        prog->next_token_start += i;
+        return tok;
     }
     BecolReportError(BECOL_ERROR_PARSING, "Reached end of program without finding a token");
     return NULL;

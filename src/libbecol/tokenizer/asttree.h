@@ -14,9 +14,9 @@ typedef enum {
     BECOL_AST_REQUEST, //(module: string, for: string)
     BECOL_AST_TELL, //(module: string)
     
-    BECOL_AST_LITTERAL, //(val: any)
+    BECOL_AST_LITERAL, //(val: any)
     BECOL_AST_VARIABLE, //(name: string)
-    BECOL_AST_EXPR, // eg. 5 + 1
+    BECOL_AST_GROUPING, // eg. 5 + 1
 
     BECOL_AST_ADD,
     BECOL_AST_SUB,
@@ -41,7 +41,7 @@ typedef struct ASTTreeNode {
 
 char* BecolGetTypeNameFromASTType(ASTTreeType type);
 
-ASTTreeNode* BecolMallocASTNode(int num_of_child_nodes, int num_of_arguments);
+ASTTreeNode* BecolMallocASTNode();
 void         BecolFreeASTNode(ASTTreeNode* node);
 
 #endif

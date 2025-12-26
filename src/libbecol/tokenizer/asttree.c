@@ -1,6 +1,8 @@
 #include "../config.h"
 #include "asttree.h"
 #include "../memory/mem.h"
+#include <stddef.h>
+#include <stdio.h>
 
 // utility file for stuff relating to AST Tree stuff.
 
@@ -11,9 +13,9 @@ char* ASTTreeTypeNames[] = {
     "Request",
     "Tell",
     
-    "Litteral",
+    "Literal",
     "Variable",
-    "Expr",
+    "Grouping",
 
     "Add",
     "Sub",
@@ -40,17 +42,29 @@ char* BecolGetTypeNameFromASTType(ASTTreeType type) {
 #endif
 }
 
-ASTTreeNode* BecolMallocASTNode(int num_of_child_nodes, int num_of_arguments) {
+ASTTreeNode* BecolMallocASTNode() {
     ASTTreeNode* node = BecolMalloc(sizeof(ASTTreeNode));
-    node->arguments = BecolMalloc(sizeof(void*)*num_of_arguments);
-    node->child_nodes = BecolMalloc(sizeof(void*)*num_of_child_nodes);
-    node->num_of_arguments = num_of_arguments;
-    node->num_of_child_nodes = num_of_child_nodes;
+    node->arguments = NULL;
+    node->child_nodes = NULL;
+    node->num_of_arguments = 0;
+    node->num_of_child_nodes = 0;
     return node;
 }
 
 void BecolFreeASTNode(ASTTreeNode* node) {
+    if (node == NULL)
+        return;
     BecolFree(node->arguments);
     BecolFree(node->child_nodes);
     BecolFree(node);
+}
+
+void _BecolPrintASTTree(ASTTreeNode* root, int indent) {
+    printf("%s\n", BecolGetTypeNameFromASTType(root->type));
+    for (int i=0;i<root->num_of_child_nodes;i++) {
+        _BecolPrintASTTree(root->child_nodes[i], indent+4);
+    }
+}
+void BecolPrintASTTree(ASTTreeNode* root) {
+    _BecolPrintASTTree(root, 0);
 }

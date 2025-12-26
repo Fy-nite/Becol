@@ -1,42 +1,4 @@
-tell console to print Hi :3
+tell console to print "Hi :3"
 tell console to print (5 + 1)
 ask console for input
 tell console to print $result
-
-
-
-Program
-  | Action (force: true, module: Value("console"), action: Value("print"))
-    | Value ("Hi")
-    | Value (":3")
-  | Action (force: true, module: Value("console"), action: Value("print"))
-    | Expr
-      | Add
-        | Value (5)
-        | Value (1)
-  | Request (module: Value("console"), for: Value("input"))
-  | Action (force: true, module: Value("console"), action: Value("print"))
-    | Variable ("result")
-
-Token Types:
-    Program
-    Action (forced: bool, module: string, action: string)
-    Request (module: string, for: string)
-    Tell (module: string)
-    
-    Litteral (val: any)
-    Variable (name: string)
-    Expr // eg. 5 + 1
-
-    Add
-    Sub
-    Mul
-    Div
-    Mod
-    Equal
-    Greator
-    Less
-    GreaterOrEqual
-    LessOrEqual
-    NotEqual
-
