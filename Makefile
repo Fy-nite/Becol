@@ -8,7 +8,7 @@ WIN_TARGET = bin/$(NAME).exe
 WIN_LIB_TARGET = bin/lib$(NAME).dll
 LIBS = -lm
 CC ?= gcc
-CFLAGS =-Wall -DCOMMIT="\"$(shell git describe --always --dirty)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror
+CFLAGS =-Wall -DCOMMIT="\"$(shell git describe --always --dirty)\"" -DVERSION="\"$(VERSION)\"" -DSOURCE="\"$(shell git remote get-url $(shell git remote))\"" -Werror -Wextra -pedantic
 LIB_CFLAGS = -fPIC -DVERSION="\"$(LIB_VERSION)\""
 
 OS := $(shell uname)
@@ -24,6 +24,7 @@ endif
 default: release
 release: $(TARGET)
 debug: CFLAGS += -g -fsanitize=address
+debug: LIB_CFLAGS += -g -fsanitize=address -static-libasan
 debug: $(TARGET)
 all: default
 
@@ -65,3 +66,7 @@ clean:
 
 run: $(TARGET)
 	$(TARGET)
+
+bear:
+	bear -- make all
+

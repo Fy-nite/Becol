@@ -1,12 +1,16 @@
 #ifndef LIBBECOL
 #define LIBBECOL
 
-void BecolInit();
-char* BecolVersion();
+#include "memory/mem.h"
 
-void BecolModuleSearchPaths(char* paths[], int paths_len);
-void BecolRun(char* str);
+void BecolInit(void);
+char *BecolVersion(void);
 
-void BecolCleanup();
+void BecolModuleSearchPaths(char *paths[], int paths_len);
+void BecolRun(MemoryArena *arena
+              //, const char *path
+);
+
+void BecolCleanup(MemoryArena *arena);
 
 #endif

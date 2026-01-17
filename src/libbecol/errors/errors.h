@@ -1,24 +1,23 @@
-#include <stdbool.h>
 
 #ifndef BECOL_ERRORS
 #define BECOL_ERRORS
 
-typedef enum {
-    BECOL_ERROR_GENERIC,
-    BECOL_ERROR_PARSING
-} ErrorCode;
+#include "../memory/mem.h"
+#include <stdbool.h>
+
+typedef enum { BECOL_ERROR_GENERIC, BECOL_ERROR_PARSING } ErrorCode;
 
 typedef struct {
     ErrorCode err;
-    char* message;
+    char *message;
 } Error;
 
 extern bool errorFlag;
-extern Error* currentError;
+extern Error *currentError;
 
-void BecolReportError(ErrorCode err, char* message);
-bool BecolIsError();
-void BecolClearError();
-void BecolPrintError();
+void BecolReportError(MemoryArena *arena, ErrorCode err, char *message);
+bool BecolIsError(void);
+void BecolClearError(void);
+void BecolPrintError(void);
 
 #endif
